@@ -37,6 +37,8 @@ export const momAPI = {
     api.patch(`/mom/action-item/${momId}/${itemId}`, data),
   updateSpeakers: (meetingId, speakerMap) =>
     api.put(`/mom/speakers/${meetingId}`, { speakerMap }),
+  emailMOM: (meetingId, recipients) =>
+    api.post(`/mom/email/${meetingId}`, { recipients }),
 };
 
 export default api;

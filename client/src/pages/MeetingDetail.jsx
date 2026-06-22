@@ -8,6 +8,7 @@ import {
 import MOMViewer from '../components/MOMViewer';
 import TranscriptViewer from '../components/TranscriptViewer';
 import ExportMOM from '../components/ExportMOM';
+import EmailMOM from '../components/EmailMOM';
 
 export default function MeetingDetail() {
   const { id } = useParams();
@@ -121,6 +122,7 @@ export default function MeetingDetail() {
           </div>
 
           <div className="flex gap-3">
+            {mom && <EmailMOM meetingId={meeting._id} />}
             {mom && <ExportMOM mom={mom} meetingTitle={meeting.title} />}
             <button
               onClick={handleGenerateMOM}

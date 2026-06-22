@@ -155,4 +155,39 @@ router.put('/speakers/:meetingId', auth, async (req, res) => {
   }
 });
 
+// Email MOM to participants
+router.post('/email/:meetingId', auth, async (req, res) => {
+  try {
+    const { recipients } = req.body;
+
+    if (!recipients || recipients.length === 0) {
+      return res.status(400).json({ error: 'At least one email is required' });
+    }
+
+    const meeting = await Meeting.findOne({
+      _id: req.params.meetingId,
+      hostUser: req.user._id,
+    });
+
+    if (!meeting) return res.status(404).json({ error: 'Meeting not found' });
+
+    const mom = await MOM.findOne({ meeting: meeting._id });
+    if (!mom) return res.status(404).json({ error: 'MOM not generated yet' });
+
+    const { sendMOMEmail } = require('../services/emailService');
+
+    await sendMOMEmail({
+      to: recipients,
+      meetingTitle: meeting.title,
+      mom,
+      date: new Date(meeting.startTime || meeting.createdAt).toLocaleDateString(),
+    });
+
+    res.json({ message: `MOM sent to ${recipients.length} recipient(s)` });
+  } catch (error) {
+    console.error('Email error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
