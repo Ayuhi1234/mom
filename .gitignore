@@ -1,7 +1,17 @@
 node_modules/
 dist/
+dist-ssr/
 .env
 *.log
+*.local
 uploads/*
 !uploads/.gitkeep
 .DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

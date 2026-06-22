@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 320px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    .header {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header p { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+    .content { padding: 16px; }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-bar.idle { background: #f1f5f9; color: #64748b; }
+    .status-bar.recording { background: #fef2f2; color: #dc2626; }
+    .status-bar.uploading { background: #eff6ff; color: #2563eb; }
+
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .dot.pulse { animation: pulse 1.5s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .timer { margin-left: auto; font-variant-numeric: tabular-nums; }
+
+    .meeting-info {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .meeting-info .label { color: #94a3b8; font-size: 11px; margin-bottom: 4px; }
+    .meeting-info .value { font-weight: 500; word-break: break-all; }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-record {
+      background: #dc2626;
+      color: white;
+    }
+    .btn-record:hover { background: #b91c1c; }
+    .btn-stop {
+      background: #1e293b;
+      color: white;
+    }
+    .btn-stop:hover { background: #0f172a; }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .not-meeting {
+      text-align: center;
+      padding: 24px 16px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .not-meeting svg { margin-bottom: 8px; }
+
+    .footer {
+      padding: 12px 16px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .footer a { color: #3b82f6; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+    </svg>
+    <div>
+      <h1>MOM Generator</h1>
+      <p>Auto-record & generate meeting minutes</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="status-bar" class="status-bar idle">
+      <div class="dot"></div>
+      <span id="status-text">Ready</span>
+      <span id="timer" class="timer" style="display:none">00:00</span>
+    </div>
+
+    <div id="meeting-info" class="meeting-info" style="display:none">
+      <div class="label">Meeting</div>
+      <div class="value" id="meeting-title"></div>
+    </div>
+
+    <div id="not-meeting" class="not-meeting" style="display:none">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+      </svg>
+      <p>Open a Google Meet or Zoom call to start recording</p>
+    </div>
+
+    <button id="btn-record" class="btn btn-record" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="6"></circle></svg>
+      Start Recording
+    </button>
+
+    <button id="btn-stop" class="btn btn-stop" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><rect x="6" y="6" width="12" height="12" rx="1"></rect></svg>
+      Stop & Generate MOM
+    </button>
+  </div>
+
+  <div class="footer">
+    MOM will appear at <a href="http://localhost:5173/dashboard" target="_blank">localhost:5173</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
