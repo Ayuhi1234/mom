@@ -53,7 +53,17 @@ app.use('/api/webhooks', webhookRoutes);
 app.use('/api/upload', uploadRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: {
+      hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+      hasGoogleSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri: process.env.GOOGLE_REDIRECT_URI || 'NOT SET',
+      clientUrl: process.env.CLIENT_URL || 'NOT SET',
+      nodeEnv: process.env.NODE_ENV || 'NOT SET',
+    },
+  });
 });
 
 const path = require('path');
